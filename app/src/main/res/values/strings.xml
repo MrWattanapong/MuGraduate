@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Graduation</string>
     <string name="signup"><u>Sign Up!</u></string>
+    <string name="title_activity_position_map">Map</string>
 </resources>

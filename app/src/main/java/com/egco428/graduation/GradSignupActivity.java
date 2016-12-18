@@ -1,5 +1,6 @@
 package com.egco428.graduation;
 
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -66,7 +67,12 @@ public class GradSignupActivity extends AppCompatActivity {
                         firstnameTxt.getText().toString().equals("") ||
                         lastnameTxt.getText().toString().equals("") ||
                         mobileTxt.getText().toString().equals("")) {
-                    Toast.makeText(GradSignupActivity.this, "Please fill your Blank fields", Toast.LENGTH_SHORT).show();
+                    userRegisTxt.setError("Require");
+                    passRegisTxt.setError("Require");
+                    conpassRegisTxt.setError("Require");
+                    firstnameTxt.setError("Require");
+                    lastnameTxt.setError("Require");
+                    mobileTxt.setError("Require");
                 } else {
                     //// เช็ค username ว่าซ้ำกับใน firebase ไหม
                     boolean same = false;

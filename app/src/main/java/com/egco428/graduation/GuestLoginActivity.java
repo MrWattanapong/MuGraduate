@@ -1,5 +1,6 @@
 package com.egco428.graduation;
 
+import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -63,6 +63,8 @@ public class GuestLoginActivity extends AppCompatActivity {
             }
         });
         getUserPass();
+        getLatLon();
+
     }
 
     public void getLocation() {
@@ -83,7 +85,8 @@ public class GuestLoginActivity extends AppCompatActivity {
         for (int i=0; i < gradList2.size(); i++){
             if (userGuest.getText().toString().equals(gradList2.get(i).getUsername())){
                 Lati = gradList2.get(i).getLatitude();
-                test.setText(Lati);
+                Long = gradList2.get(i).getLongitude();
+                test.setText(Lati+"\n"+Long);
             }
         }
 
@@ -98,8 +101,9 @@ public class GuestLoginActivity extends AppCompatActivity {
             }
         }
         if (check) {
-
             getLocation();
+//            Intent intent = new Intent(GuestLoginActivity.this,PositionMapActivity.class);
+//            startActivity(intent);
 
         } else {
             Toast.makeText(GuestLoginActivity.this, "Invalid username/code.", Toast.LENGTH_SHORT).show();
