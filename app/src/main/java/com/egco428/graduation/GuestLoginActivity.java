@@ -34,6 +34,9 @@ public class GuestLoginActivity extends AppCompatActivity {
     private String Lati;
     private String Long;
 
+    public static final String Latitude = "Latitude";
+    public static final String Longitude = "Longitude";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,8 +105,10 @@ public class GuestLoginActivity extends AppCompatActivity {
         }
         if (check) {
             getLocation();
-//            Intent intent = new Intent(GuestLoginActivity.this,PositionMapActivity.class);
-//            startActivity(intent);
+            Intent intent = new Intent(GuestLoginActivity.this,PositionMapActivity.class);
+            intent.putExtra(Latitude,Lati);
+            intent.putExtra(Longitude,Long);
+            startActivity(intent);
 
         } else {
             Toast.makeText(GuestLoginActivity.this, "Invalid username/code.", Toast.LENGTH_SHORT).show();

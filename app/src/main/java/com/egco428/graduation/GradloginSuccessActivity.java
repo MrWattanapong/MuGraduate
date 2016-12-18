@@ -131,7 +131,7 @@ public class GradloginSuccessActivity extends AppCompatActivity implements Googl
             // Call Location Services
             LocationRequest locationRequest = new LocationRequest()
                     .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                    .setInterval(1000);
+                    .setInterval(5000);
             LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, this);
         }
     }
