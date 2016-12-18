@@ -1,53 +1,71 @@
 package com.egco428.graduation;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
+
 public class GradLoginActivity extends AppCompatActivity {
+
     private EditText userLoginTxt;
     private EditText passLoginTxt;
     private TextView signup;
     private Button loginBtn;
+
     private FirebaseDatabase database;
     private DatabaseReference Myref;
     private ArrayList<Graduate> gradList;
+
     public static final String Firstname = "Firstname";
     public static final String Username = "Username";
     public static final String Code = "Code";
+
+    public boolean waiting = true;
+
     Graduate graduate;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grad_login);
+
         SharedPreferences userDetails = getSharedPreferences("userdetails", MODE_PRIVATE);
         String Uname = userDetails.getString("Username", "0");
         if (Uname != "0"){
             Intent intent = new Intent(this,GradloginSuccessActivity.class);
             startActivity(intent);
         }
+
         View decorView = getWindow().getDecorView();
         //// Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
         decorView.setSystemUiVisibility(uiOptions);
+
         database = FirebaseDatabase.getInstance();
         Myref = database.getReference(databaseconfig.Grad_Table);
         gradList = new ArrayList<>();
         getUserPass();
+
         userLoginTxt = (EditText)findViewById(R.id.userLoginTxt);
         passLoginTxt = (EditText)findViewById(R.id.passLoginTxt);
         signup = (TextView)findViewById(R.id.signupTxt);
         loginBtn = (Button)findViewById(R.id.loginBtn);
+
         //// setonclick
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +74,7 @@ public class GradLoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
         //// setonclick
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,6 +84,7 @@ public class GradLoginActivity extends AppCompatActivity {
             }
         });
     }
+
     //// check username password ว่าตรงกับใน firebase ไหม
     public void checkuser(){
         boolean correct = false;
@@ -74,18 +94,17 @@ public class GradLoginActivity extends AppCompatActivity {
                 correct = true;
             }
         }
+
+        //Stored Firstname,Username,Code into userdetails and clear inputbox
         if(correct){
             Toast.makeText(GradLoginActivity.this, "Login success.", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(GradLoginActivity.this, GradloginSuccessActivity.class);
-//            intent.putExtra(Firstname,graduate.getFirstname());
-//            intent.putExtra(Username,graduate.getUsername());
-//            intent.putExtra(Code,graduate.getRandomnum());
             SharedPreferences userDetails = getSharedPreferences("userdetails", MODE_PRIVATE);
             SharedPreferences.Editor edit = userDetails.edit();
             edit.clear();
-            edit.putString("Firstname", graduate.getFirstname());
-            edit.putString("Username", graduate.getUsername());
-            edit.putString("Code", graduate.getRandomnum());
+            edit.putString(Firstname, graduate.getFirstname());
+            edit.putString(Username, graduate.getUsername());
+            edit.putString(Code, graduate.getRandomnum());
             edit.commit();
             startActivityForResult(intent,0);
             userLoginTxt.setText("");
@@ -95,6 +114,7 @@ public class GradLoginActivity extends AppCompatActivity {
             Toast.makeText(GradLoginActivity.this, "Login fail.", Toast.LENGTH_SHORT).show();
         }
     }
+
     //// ดึงข้อมูลใน firebase มาเก็บใน arraylist
     public void getUserPass(){
         Myref.addChildEventListener(new ChildEventListener() {
@@ -117,4 +137,31 @@ public class GradLoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                if (event.getPointerCount()==3){
+                    Log.d("Controlls","Pressed "+event.getPointerCount()+" go back");
+                    waiting =false;
+                    Intent intent = new Intent(this,MainActivity.class);
+                    startActivity(intent);
+                }
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_UP:
+            {
+                if (event.getPointerCount()==2 &&waiting){
+                    Log.d("Controlls","Pressed "+event.getPointerCount()+" pop up menu");
+                }
+                break;
+            }
+        }
+        return true;
+    }
+
 }

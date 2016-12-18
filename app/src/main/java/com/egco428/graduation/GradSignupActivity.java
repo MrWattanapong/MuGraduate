@@ -1,8 +1,8 @@
 package com.egco428.graduation;
 
+import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,6 +26,8 @@ public class GradSignupActivity extends AppCompatActivity {
     private EditText lastnameTxt;
     private EditText mobileTxt;
     private Button submitBtn;
+    private TextInputLayout passInput;
+    private TextInputLayout conInput;
 
     private FirebaseDatabase database;
     private DatabaseReference Myref;
@@ -50,6 +52,8 @@ public class GradSignupActivity extends AppCompatActivity {
         lastnameTxt = (EditText) findViewById(R.id.lastnameTxt);
         mobileTxt = (EditText) findViewById(R.id.telTxt);
         submitBtn = (Button) findViewById(R.id.submitBtn);
+        passInput = (TextInputLayout)findViewById(R.id.passInput);
+        conInput = (TextInputLayout)findViewById(R.id.confirmpassInput);
 
         database = FirebaseDatabase.getInstance();
         Myref = database.getReference(databaseconfig.Grad_Table);
@@ -60,7 +64,9 @@ public class GradSignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!(passRegisTxt.getText().toString().equals(conpassRegisTxt.getText().toString()))) {
-                    Toast.makeText(GradSignupActivity.this, "Password doesn't match", Toast.LENGTH_SHORT).show();
+                    passInput.setError("Password doesn't match");
+                    conInput.setError("Password doesn't match");
+
                 } else if (userRegisTxt.getText().toString().equals("") ||
                         passRegisTxt.getText().toString().equals("") ||
                         conpassRegisTxt.getText().toString().equals("") ||

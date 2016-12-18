@@ -1,9 +1,10 @@
 package com.egco428.graduation;
 
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,18 +25,12 @@ public class GuestLoginActivity extends AppCompatActivity {
     private EditText codeGuest;
     private Button addbtn;
     private TextView test;
-
+    public boolean waiting = true;
     private FirebaseDatabase database;
     private DatabaseReference Myref;
     private ArrayList<Graduate> gradList;
-    private DatabaseReference Myref2;
-    private ArrayList<GradPosition> gradList2;
 
-    private String Lati;
-    private String Long;
-
-    public static final String Latitude = "Latitude";
-    public static final String Longitude = "Longitude";
+    public static final String Username = "UsernameGr";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,9 +50,7 @@ public class GuestLoginActivity extends AppCompatActivity {
 
         database = FirebaseDatabase.getInstance();
         Myref = database.getReference(databaseconfig.Grad_Table);
-        Myref2 = database.getReference(databaseconfig.Position_Table);
         gradList = new ArrayList<>();
-        gradList2 = new ArrayList<>();
 
         addbtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,35 +59,9 @@ public class GuestLoginActivity extends AppCompatActivity {
             }
         });
         getUserPass();
-        getLatLon();
 
     }
 
-    public void getLocation() {
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-
-            @Override
-            public void run() {
-                //call function
-                getLatLon();
-                handler.postDelayed(this, 5000);
-            }
-        }, 5000);
-    }
-
-    public void getLatLon() {
-        getUserPass2();
-        for (int i=0; i < gradList2.size(); i++){
-            if (userGuest.getText().toString().equals(gradList2.get(i).getUsername())){
-                Lati = gradList2.get(i).getLatitude();
-                Long = gradList2.get(i).getLongitude();
-                test.setText(Lati+"\n"+Long);
-            }
-        }
-
-
-    }
 
     public void addFriend() {
         boolean check = false;
@@ -104,15 +71,38 @@ public class GuestLoginActivity extends AppCompatActivity {
             }
         }
         if (check) {
-            getLocation();
             Intent intent = new Intent(GuestLoginActivity.this,PositionMapActivity.class);
-            intent.putExtra(Latitude,Lati);
-            intent.putExtra(Longitude,Long);
+            intent.putExtra(Username,userGuest.getText().toString());
             startActivity(intent);
 
         } else {
             Toast.makeText(GuestLoginActivity.this, "Invalid username/code.", Toast.LENGTH_SHORT).show();
         }
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_POINTER_DOWN:
+            {
+                if (event.getPointerCount()==3){
+                    Log.d("Controlls","Pressed "+event.getPointerCount()+" go back");
+                    waiting =false;
+                    Intent intent = new Intent(this,MainActivity.class);
+                    startActivity(intent);
+                }
+                break;
+            }
+
+            case MotionEvent.ACTION_POINTER_UP:
+            {
+                if (event.getPointerCount()==2 &&waiting){
+                    Log.d("Controlls","Pressed "+event.getPointerCount()+" pop up menu");
+                }
+                break;
+            }
+        }
+        return true;
     }
 
     //// ดึงข้อมูลใน firebase มาเก็บใน arraylist
@@ -122,35 +112,6 @@ public class GuestLoginActivity extends AppCompatActivity {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 Graduate dataFirebase = dataSnapshot.getValue(Graduate.class);
                 gradList.add(dataFirebase);
-                GradPosition gradPosition = dataSnapshot.getValue(GradPosition.class);
-                gradList2.add(gradPosition);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
-    }
-
-    //// ดึงข้อมูลใน firebase มาเก็บใน arraylist
-    public void getUserPass2() {
-        Myref2.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                GradPosition gradPosition = dataSnapshot.getValue(GradPosition.class);
-                gradList2.add(gradPosition);
             }
 
             @Override
